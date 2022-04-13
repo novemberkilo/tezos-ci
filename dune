@@ -1,3 +1,12 @@
 (data_only_dirs "_opam" "var" "tmp")
 
 (vendored_dirs vendor)
+
+(install
+ (files
+  (vendor/ocurrent/static/css/normalize.css as css/normalize.css)
+  (vendor/ocurrent/static/css/style.css as css/style.css)
+  (vendor/ocurrent/static/img/dashboard-logo.png as img/dashboard-logo.png)
+  (vendor/ocurrent/static/js/line-numbers.js as js/line-numbers.js))
+ (section share)
+ (package tezos-ci))

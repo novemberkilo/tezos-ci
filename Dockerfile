@@ -32,9 +32,10 @@ RUN opam pin add -yn current_docker.dev "./vendor/ocurrent" && \
     opam pin add -yn ocluster-api.dev "./vendor/ocluster" && \
     opam pin add -yn current-web-pipelines.dev "./vendor/current-web-pipelines"
 COPY --chown=opam tezos-ci.opam /src/
-RUN opam install -y --deps-only .
+RUN opam-2.1 install -y --deps-only .
 ADD --chown=opam . .
-RUN opam exec -- dune build ./_build/install/default/bin/tezos-ci
+RUN opam-2.1 exec -- dune build -p tezos-ci @install
+RUN opam-2.1 exec -- dune install --prefix=/usr/local --destdir=/src/pkg --section=bin,share --relocatable tezos-ci
 
 FROM debian:11
 RUN apt-get update && apt-get install libev4 openssh-client curl gnupg2 dumb-init git graphviz libsqlite3-dev ca-certificates netbase -y --no-install-recommends
@@ -46,4 +47,5 @@ ENTRYPOINT ["dumb-init", "/usr/local/bin/tezos-ci"]
 ENV OCAMLRUNPARAM=a=2
 # Enable experimental for docker manifest support
 ENV DOCKER_CLI_EXPERIMENTAL=enabled
-COPY --from=build /src/_build/install/default/bin/tezos-ci /usr/local/bin/
+COPY --from=build /src/pkg/usr/local/bin/tezos-ci /usr/local/bin/
+COPY --from=build /src/pkg/usr/local/share /usr/local/share/

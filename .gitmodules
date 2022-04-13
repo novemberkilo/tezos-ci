@@ -4,8 +4,8 @@
 	branch = tezos-ci
 [submodule "ocurrent"]
 	path = vendor/ocurrent
-	url = https://github.com/ocurrent/ocurrent.git
-	branch = master
+	url = https://github.com/MisterDA/ocurrent.git
+	branch = tezos-ci-live
 [submodule "vendor/current-web-pipelines"]
 	path = vendor/current-web-pipelines
 	url = https://github.com/tarides/current-web-pipelines.git

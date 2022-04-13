@@ -90,7 +90,7 @@ let pipeline ~index ocluster gitlab =
              ~value:(Pipeline.Source.to_string source)
              ~input:src
 
-let main () current_config mode gitlab (`Ocluster_cap cap) =
+let main () current_config (mode, docroot) gitlab (`Ocluster_cap cap) =
   let ocluster =
     Option.map
       (fun cap ->
@@ -113,7 +113,7 @@ let main () current_config mode gitlab (`Ocluster_cap cap) =
         (s "webhooks" / s "gitlab" /? nil)
         @--> Gitlab.webhook ~webhook_secret:(Gitlab.Api.webhook_secret gitlab))
       :: Website.routes index
-      @ Current_web.routes engine
+      @ Current_web.routes ~docroot engine
     in
     Current_web.Site.(v ~has_role:allow_all) ~name:program_name routes
   in
@@ -153,7 +153,7 @@ let cmd =
         const main
         $ Logging.cmdliner
     $ Current.Config.cmdliner
-    $ Current_web.cmdliner
+    $ Current_web.cmdliner ()
     $ Current_gitlab.Api.cmdliner
     $ ocluster_cap)
 

@@ -28,7 +28,7 @@ let pipeline ~index ocluster =
        ~value:(Pipeline.Source.to_string source)
        ~input:commit
 
-let main () current_config mode (`Ocluster_cap cap) =
+let main () current_config (mode, docroot) (`Ocluster_cap cap) =
   let ocluster =
     Option.map
       (fun cap ->
@@ -46,7 +46,7 @@ let main () current_config mode (`Ocluster_cap cap) =
         pipeline ~index ocluster)
   in
   let site =
-    let routes = Website.routes index @ Current_web.routes engine in
+    let routes = Website.routes index @ Current_web.routes ~docroot engine in
     Current_web.Site.(v ~has_role:allow_all) ~name:program_name routes
   in
   Logging.run
@@ -83,6 +83,6 @@ let cmd =
   let info = Cmd.info program_name ~doc ~sdocs ~version in
   Cmd.v info Term.(
     const main $ Logging.cmdliner $ Current.Config.cmdliner
-    $ Current_web.cmdliner $ ocluster_cap)
+    $ Current_web.cmdliner () $ ocluster_cap)
 
 let () = exit @@ Cmd.eval_result cmd
