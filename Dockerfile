@@ -40,7 +40,7 @@ FROM debian:11
 RUN apt-get update && apt-get install libev4 openssh-client curl gnupg2 dumb-init git graphviz libsqlite3-dev ca-certificates netbase -y --no-install-recommends
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 RUN echo 'deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable' >> /etc/apt/sources.list
-RUN apt-get update && apt-get install docker-ce -y --no-install-recommends
+#RUN apt-get update && apt-get install docker-ce -y --no-install-recommends
 WORKDIR /var/lib/ocurrent
 ENTRYPOINT ["dumb-init", "/usr/local/bin/tezos-ci"]
 ENV OCAMLRUNPARAM=a=2

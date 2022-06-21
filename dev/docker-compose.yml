@@ -3,13 +3,12 @@ services:
   tezos-ci:
     build:
       context: ..
-      # dockerfile: Dockerfile.stress
-    command: --listen-prometheus=9090
+    command: "--ocluster-cap /secrets/${OCLUSTER_CAP_FILE} --gitlab-token-file=/secrets/${GITLAB_TOKEN_FILE} --gitlab-webhook-secret-file=/dev/null --listen-prometheus=9090"
     init: true
     ports:
-      - "5000:5000"
-    #volumes:
-    #  - "../capnp-secrets:/capnp-secrets"
+      - "8080:8080"
+    volumes:
+      - "../../:/secrets"
   grafana:
     build: './grafana'
     ports:

@@ -102,7 +102,7 @@ let pipeline ~index ocluster gitlab =
       ci_refs |> Current.map (List.map fst) |> Website.set_active_sources index;
     ]
 
-let main () current_config mode gitlab (`Ocluster_cap cap) =
+let main () current_config mode gitlab (`Ocluster_cap cap) prometheus_config =
   let ocluster =
     Option.map
       (fun cap ->
@@ -130,12 +130,12 @@ let main () current_config mode gitlab (`Ocluster_cap cap) =
     Current_web.Site.(v ~has_role:allow_all) ~name:program_name routes
   in
   Logging.run
-    (Lwt.choose
+    (Lwt.choose(
        [
          Current.Engine.thread engine;
          (* The main thread evaluating the pipeline. *)
          Current_web.run ~mode site (* Optional: provides a web UI *);
-       ])
+       ] @ List.map Lwt_result.ok (Prometheus_unix.serve prometheus_config)))
   |> Result.map_error (fun (`Msg msg) -> msg)
 
 (* Command-line parsing *)
@@ -146,6 +146,14 @@ let version =
   | Some v -> Build_info.V1.Version.to_string v
 
 open Cmdliner
+
+(* let listen_prometheus =
+  let doc =
+    Arg.info ~docs:"MONITORING OPTIONS" ~docv:"PORT" ~doc:
+      "Port on which to provide Prometheus metrics over HTTP."
+      ["listen-prometheus"]
+  in
+  Arg.(value @@ opt (some int) None doc) *)
 
 let named f = Cmdliner.Term.(app (const f))
 
@@ -167,6 +175,7 @@ let cmd =
       $ Current.Config.cmdliner
       $ Current_web.cmdliner
       $ Current_gitlab.Api.cmdliner
-      $ ocluster_cap)
+      $ ocluster_cap
+      $ Prometheus_unix.opts)
 
 let () = exit (Cmd.eval_result cmd)

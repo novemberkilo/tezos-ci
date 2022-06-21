@@ -19,6 +19,8 @@
   lwt.unix
   obuilder-spec
   opam-file-format
+  prometheus
+  prometheus-app.unix
   tezos-ci.analysis
   tezos-ci.logging
   tezos-ci.octez
